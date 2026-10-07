@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>E Flappy U · EFU</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="pixel-world" aria-hidden="true">
+      <div class="pixel-sky"></div>
+      <img class="pixel-scene" src="scene.svg" alt="" />
+      <div class="pixel-birds">
+        <span class="pixel-bird b1"></span>
+        <span class="pixel-bird b2"></span>
+        <span class="pixel-bird b3"></span>
+      </div>
+      <div class="pixel-floor"></div>
+    </div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="mark" aria-hidden="true">EF</div>
+          <div>
+            <p class="eyebrow">EFU · 社内向け</p>
+            <h1>E Flappy U</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <span id="player-chip" class="player-chip hidden"></span>
+          <button id="mute-btn" class="ghost" type="button">音量オン</button>
+        </div>
+      </header>
+
+      <p class="tagline">社内チャレンジ · チームで空を飛ぼう</p>
+
+      <div class="layout">
+        <aside class="info-col panel">
+          <h2>遊び方</h2>
+          <ol class="howto">
+            <li>タップ / スペース / ↑ でジャンプ</li>
+            <li>すき間をくぐると <strong>＋1点</strong></li>
+            <li>得点が上がるとスピードも上がります</li>
+            <li>パイプや地面に当たると終了</li>
+          </ol>
+          <div class="control-row" aria-label="操作">
+            <span class="control-chip">タップ</span>
+            <span class="control-chip">スペース</span>
+            <span class="control-chip">↑</span>
+          </div>
+          <div class="player-card">
+            <h3>プレイヤー</h3>
+            <p id="player-card-empty" class="hint">登録すると、名前・キャラクター・自己ベストがここに表示されます。</p>
+            <dl id="player-card-stats" class="stats hidden">
+              <div>
+                <dt>名前</dt>
+                <dd id="stat-name">—</dd>
+              </div>
+              <div>
+                <dt>部署</dt>
+                <dd id="stat-dept">—</dd>
+              </div>
+              <div>
+                <dt>キャラクター</dt>
+                <dd id="stat-char">—</dd>
+              </div>
+              <div>
+                <dt>自己ベスト</dt>
+                <dd id="stat-best">0 点</dd>
+              </div>
+            </dl>
+          </div>
+        </aside>
+
+        <section class="game-col">
+          <div id="lobby" class="panel lobby">
+            <h2>プレイ登録</h2>
+            <p class="hint">社内で使っている呼び名で登録してください。自己ベストは共通ランキングに表示されます。</p>
+            <form id="join-form">
+              <label>
+                お名前
+                <input id="player-name" name="name" maxlength="20" required placeholder="例：山田 太郎" autocomplete="nickname" />
+              </label>
+              <label>
+                部署 <span>（任意）</span>
+                <input id="player-dept" name="department" maxlength="24" placeholder="例：プロダクト" />
+              </label>
+              <p class="label">キャラクターを選ぶ</p>
+              <div id="character-grid" class="character-grid"></div>
+              <button class="primary" type="submit">プレイをはじめる</button>
+            </form>
+          </div>
+
+          <div id="stage-wrap" class="stage hidden">
+            <canvas id="game" width="480" height="700" aria-label="E Flappy U ゲーム画面"></canvas>
+            <button id="leave-btn" class="ghost leave" type="button">名前 / キャラクターを変更</button>
+          </div>
+        </section>
+
+        <aside class="rank-col panel">
+          <div class="rank-head">
+            <h2>EFU ランキング</h2>
+            <span class="point-badge">⭐ 点</span>
+          </div>
+          <p class="hint">各プレイヤーの自己ベストを社内サーバーに保存します。</p>
+          <div id="ranking-list" class="ranking-list">
+            <p class="empty">ランキングを読み込み中…</p>
+          </div>
+        </aside>
+      </div>
+
+      <footer>社内利用専用 · 金銭・景品との交換はありません</footer>
+    </div>
+    <script type="module" src="game.js"></script>
+  </body>
+</html>

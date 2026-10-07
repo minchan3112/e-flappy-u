@@ -1,0 +1,10 @@
+{
+  "name": "flappy-bird-web",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "EFU internal game: E Flappy U",
+  "scripts": {
+    "dev": "node server.mjs"
+  }
+}
