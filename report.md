@@ -1,386 +1,257 @@
-# E Flappy U — プロジェクト紹介・発表用レポート
+# E Flappy U — Project Report
 
-> **目的:** 約8分の発表で、E Flappy Uの概要と、Cursorを使ってどのようにWebゲームを作ったかを説明するための資料です。
+## 1. Overview
 
----
+**E Flappy U** is a Flappy Bird-style web game developed as an internal PoC.
 
-## 1. E Flappy Uとは？
+The project focuses not only on the game itself, but also on experimenting with an AI-assisted development workflow using **Cursor**.
 
-**E Flappy U** は、社内で気軽に遊べることを目的として作った、Flappy Bird風のWebゲームです。
+### Main features
 
-今回のプロジェクトでは、ゲームそのものだけではなく、
+- User name and department registration
+- Character selection
+- Browser-based gameplay
+- Keyboard and touch controls
+- Score-based difficulty progression
+- Best Score storage
+- Shared ranking for multiple users
+- Sound effects and mute function
+- Responsive UI
+- Simple Node.js backend for ranking management
 
-- 名前・部署・キャラクターを登録できる
-- ブラウザですぐに遊べる
-- スコアに応じて少しずつ難しくなる
-- 自分のBest Scoreを保存できる
-- 複数人で共通のRankingを見ることができる
+### Project concept
 
-といった、Webアプリとしての要素も入れています。
-
-### 一言で説明すると
-
-> **「社内で気軽に遊べて、みんなでスコアを競えるFlappy Bird風のWebゲームです。」**
-
----
-
-# 2. なぜこのゲームを作ったのか？
-
-もともとは別のプロジェクトとして「Sport Fan Vote」を準備していました。
-
-ただ、今回は準備時間が十分ではなかったため、より短い時間で形にできて、**誰でも内容をイメージしやすいもの**を作ろうと考えました。
-
-そこで、シンプルなゲームを題材にして、
-
-> **「AI Coding Toolを使うと、どのようにアイデアをWebアプリにしていけるのか？」**
-
-を試してみることにしました。
-
-今回特に見てほしいのは、完成したゲームだけではなく、**Cursorを使って「作る → 動かす → 気になるところを見つける → Promptで修正する」という流れで開発した点**です。
+> A simple web game that can be played casually and used to compete for scores with other users.
 
 ---
 
-# 3. 開発の進め方
+## 2. Background and Purpose
 
-今回の開発は、最初から細かい仕様をすべて決めて作ったわけではありません。
+The original PoC idea was **Sport Fan Vote**, but the project was changed to a game-based PoC because the available preparation time was limited.
 
-大まかには、以下の流れで進めました。
+E Flappy U was selected because:
 
-```text
-アイデア
+- The concept can be understood immediately by most users.
+- A playable prototype can be created in a relatively short time.
+- Changes to the UI and game behavior can be checked visually and iterated quickly.
+- It provides a simple example for experimenting with AI-assisted development.
+
+The main purpose of the PoC is therefore to explore how an idea can be turned into a working web application through iterative development with Cursor.
+
+---
+
+## 3. Development Approach
+
+The project was developed through an iterative **Prompt → Implementation → Test → Improvement** cycle.
+
+Instead of defining every detail before implementation, the development process was:
+
+```
+Idea
   ↓
-Cursorに作りたいものを伝える
+Describe the idea to Cursor
   ↓
-最初のバージョンを作る
+Initial implementation
   ↓
-実際にブラウザで動かす
+Run and check in the browser
   ↓
-「ここを変えたい」と思ったところを確認
+Identify issues or improvement points
   ↓
-CursorにPromptで伝える
+Give Cursor another Prompt
   ↓
-修正
+Implementation update
   ↓
-もう一度動かして確認
-  ↓
-繰り返し
+Repeat
 ```
 
-つまり、**Cursorに一度で完成品を作ってもらうのではなく、会話しながら少しずつ改善していく**方法です。
+This approach allowed the game to gradually evolve from a simple initial implementation into the current version.
+
+The role of Cursor was not limited to generating code. It was also used to discuss UI ideas, identify possible improvements, and implement changes based on natural-language requirements.
 
 ---
 
-# 4. Cursorで最初に伝えたこと
+## 4. Examples of Cursor Prompts
 
-最初は非常にシンプルなPromptから始めました。
-
-### Prompt ① — ゲームのアイデア
+### 4.1 Initial Game Concept
 
 > 「私はウェブアプリゲームを作りたい。Flappy Birdのようなゲームにしたい」
 
-まずはこれだけを伝えて、ゲームのベースを作ってもらいました。
+This Prompt was used to create the initial game concept and basic gameplay.
 
-ここでは細かいコードを書くのではなく、
+The initial requirement was intentionally simple. Detailed implementation decisions were left to Cursor so that the first playable version could be created quickly.
 
-- どんなゲームにしたいか
-- どんな操作にしたいか
-
-という**アイデアを自然言語で伝えること**から始めています。
-
----
-
-# 5. 実際に動かして、そこから改善する
-
-最初のバージョンができたら、実際にブラウザで動かして確認します。
-
-そこで、
-
-- ゲームらしく見えるか
-- 初めて見た人がゲームだと分かるか
-- 画面のバランスは良いか
-- 自分がイメージしていたものと合っているか
-
-などを確認しました。
-
-この段階では、コードを細かく読んで全部修正するのではなく、**実際の画面を見て気になるところをPromptで伝える**ようにしました。
-
----
-
-# 6. Cursorでの改善例
-
-### Prompt ② — 背景を改善
+### 4.2 Background and Visual Design
 
 > 「ピクセルの背景の風景をカスタマイズして、ユーザーが初めてWebに入ったときにゲームをプレイするWebサイトだと感じられるようにしたい」
 
-このPromptでは、単純に「背景を変えて」と指示するだけではなく、
+This Prompt focused on the purpose of the visual change rather than specifying the exact implementation.
 
-> **「初めて見た人がゲームサイトだと感じられるようにしたい」**
+The objective was to make the website immediately recognizable as a game when users first opened it.
 
-という目的も伝えています。
-
-Cursorには、こうした**見た目のイメージや目的を自然言語で伝えて、実装を任せる**使い方をしました。
-
----
-
-# 7. さらに実際の画面を見ながら改善
-
-ゲームを作っていくと、最初には気づかなかった細かい問題も見えてきます。
-
-例えば、ゲーム名や画面のバランスについて、以下のようにPromptを出しました。
-
-### Prompt ③ — Brandingと画面レイアウトを改善
+### 4.3 Branding and Layout Improvement
 
 > 「ここでAURORAとは何かよく分かりません。EFUに変更できますか？ゲームの名前はSky HopではなくE Flappy Uです。ゲームキャンバスの左側が少し空いているように見えますが、何を追加すると合理的ですか？」
 
-ここでは、
+This Prompt addressed several issues at once:
 
-1. 既存の設定を変更する
-2. ゲーム名を自分の意図したものに変更する
-3. 画面の余白について改善案を聞く
+1. Replace the unclear existing branding with EFU.
+2. Change the game name to E Flappy U.
+3. Ask for a reasonable way to use the empty space beside the game canvas.
 
-という3つのことを一度にCursorへ伝えています。
-
-特に面白かったのは、**「何を追加すると合理的ですか？」とCursorに改善案そのものを相談したこと**です。
+The third point is an example of using Cursor not only for implementation, but also for design suggestions during development.
 
 ---
 
-# 8. 今回のCursorの使い方
+## 5. Game Design
 
-今回の開発で意識したのは、Cursorを単なる「コード生成ツール」として使わないことです。
+### Basic gameplay
 
-### 今回のイメージ
+1. Select a character.
+2. Start the game.
+3. Control the character with Space, the Up Arrow, or touch input.
+4. Avoid the pipes.
+5. Gain 1 point for each pipe passed.
+6. The game ends when the character collides with an obstacle or the ground.
+7. Submit the score to the ranking.
 
-```text
-自分
-「こういうゲームにしたい」
+### Difficulty progression
 
-        ↓
+The difficulty increases as the score increases.
 
-Cursor
-「実装する」
+- Pipe movement speed increases.
+- The gap between pipes becomes smaller.
+- The interval between pipes becomes shorter.
 
-        ↓
+This creates a progression from an easy initial state to a more challenging high-score stage.
 
-自分
-「実際に動かして確認する」
+---
 
-        ↓
+## 6. Ranking System
 
-自分
-「ここが気になる」
+A shared ranking was added so that the game can be used by multiple users.
 
-        ↓
+If scores were stored only in the browser, the ranking would be limited to each user's own device/browser. E Flappy U therefore uses a simple Node.js server to manage shared ranking data.
 
-Cursor
-「Promptの内容をもとに修正する」
-
-        ↓
-
-自分
-「もう一度確認する」
+```
+Browser
+   ↓
+Score submission
+   ↓
+Node.js Server
+   ↓
+scores.json
+   ↓
+Shared Ranking
 ```
 
-この繰り返しによって、最初はシンプルだったゲームを、少しずつ自分のイメージに近づけていきました。
+The server provides:
+
+- Ranking retrieval API
+- Score submission API
+- Best-score update for existing users
+- Ranking data persistence
 
 ---
 
-# 9. ゲームの仕組み
+## 7. System Architecture
 
-ゲーム自体の仕組みはシンプルです。
-
-### 基本的な流れ
-
-1. キャラクターを選択
-2. ゲーム開始
-3. Space / 上矢印 / タップでジャンプ
-4. Pipeを避ける
-5. Pipeを1つ通過するとScore +1
-6. Pipeや地面などに当たるとGame Over
-7. ScoreをRankingに送信
-
-### イメージ
-
-```text
-          ジャンプ
-             ↑
-        ┌─────────┐
-        │  Bird   │
-        └─────────┘
-             ↓
-        Pipeを避ける
-             ↓
-          +1 Score
-             ↓
-       さらに難しくなる
-             ↓
-         Game Over
 ```
-
----
-
-# 10. 難易度はどう変わる？
-
-このゲームでは、Scoreが上がるにつれて難しくなるようにしています。
-
-Scoreが増えると、
-
-- Pipeの移動速度が上がる
-- Pipeの隙間が狭くなる
-- Pipeが出てくる間隔が短くなる
-
-という変化があります。
-
-そのため、
-
-> **最初は簡単 → 少しずつ難しくなる → 高得点を狙うほど難しくなる**
-
-というゲームになっています。
-
-発表では、実際にプレイしながらこの部分を見せると分かりやすいです。
-
----
-
-# 11. システムはどうなっている？
-
-構成は比較的シンプルです。
-
-```text
-┌─────────────────────┐
-│      Browser        │
-│                     │
-│ HTML / CSS / JS     │
-│       Game          │
-└──────────┬──────────┘
-           │
-           │ Ranking API
-           ↓
-┌─────────────────────┐
-│      Node.js        │
-│       Server        │
-│                     │
-│ Rankingを管理       │
-└──────────┬──────────┘
-           │
-           ↓
-      scores.json
+┌──────────────────────────┐
+│         Browser          │
+│                          │
+│   HTML / CSS / JavaScript│
+│        Game UI           │
+│        Game Logic        │
+└────────────┬─────────────┘
+             │
+             │ Ranking API
+             ↓
+┌──────────────────────────┐
+│        Node.js           │
+│         Server           │
+│                          │
+│     Ranking Management   │
+└────────────┬─────────────┘
+             │
+             ↓
+        scores.json
 ```
 
 ### Frontend
 
-ブラウザ側では、
+The browser-side application is responsible for:
 
-- 画面表示
-- ゲームの動き
-- キャラクター操作
-- Score計算
-- Ranking表示
-
-などを担当しています。
+- Game rendering
+- Character control
+- Collision detection
+- Score calculation
+- Difficulty progression
+- Character selection
+- Sound control
+- Ranking display
 
 ### Backend
 
-Node.js側では、
+The Node.js server is responsible for:
 
+- Serving the web application
 - Ranking API
-- Scoreの保存
-- Rankingデータの取得
-
-などを担当しています。
+- Score validation
+- Score persistence
+- Ranking retrieval
 
 ---
 
-# 12. なぜServerを使ったのか？
+## 8. Repository Structure
 
-今回、単純にゲームを作るだけなら、Scoreをブラウザに保存するだけでも十分です。
+| File | Purpose |
+|---|---|
+| `index.html` | Main page and game UI |
+| `game.js` | Game logic, physics, collision, score and difficulty |
+| `ranking.js` | Ranking API communication and display |
+| `server.mjs` | Node.js server and ranking API |
+| `audio.js` | Game sound effects |
+| `brand.js` | Game/company branding and character configuration |
+| `styles.css` | UI and responsive styling |
+| `scene.svg` | Pixel-style visual assets |
+| `data/scores.example.json` | Example ranking data |
+| `README.md` | Setup and usage information |
+| `report.md` | Project overview and development report |
 
-しかし、それだけでは**自分のPC・自分のブラウザだけのRanking**になってしまいます。
+---
 
-そこでServerを用意して、Rankingを共有できるようにしました。
+## 9. Local Development
 
-```text
-自分のブラウザ
-      ↓
-   Score送信
-      ↓
-Node.js Server
-      ↓
-Rankingを保存
-      ↓
-他のユーザーもRankingを確認
+The project can be run locally with Node.js.
+
+```bash
+npm run dev
 ```
 
-これによって、社内の複数人で同じRankingを見られるようにしています。
+Then open:
+
+```
+http://localhost:5173
+```
+
+The local environment includes both the game frontend and the Node.js ranking server.
 
 ---
 
-# 13. その他の機能
+## 10. Current Status
 
-ゲームとして遊びやすくするために、以下の機能も追加しています。
+The core PoC is implemented and can be run locally.
 
-- 5種類のキャラクター
-- 効果音
-- Mute機能
-- ユーザー情報の保存
-- Responsive対応
-- Company / Game NameなどのBrand設定
-- 共通Ranking
+The current version includes the game, ranking functionality, visual customization, character selection, sound, and responsive UI.
 
-ただし、今回の発表ではこれらを一つずつ詳しく説明する必要はありません。
-
-**「ゲームとして遊べるだけではなく、Webアプリとして必要な機能も少し追加した」**という程度に紹介すれば十分です。
+Cloudflare deployment has not yet been completed. The deployment is planned as the next step.
 
 ---
 
-# 14. 8分発表の流れ
+## 11. Key Takeaway
 
-| 時間 | 内容 | 見せるもの |
-|---|---|---|
-| 0:00 - 0:50 | プロジェクト紹介 | 実際のゲーム画面 |
-| 0:50 - 1:30 | なぜゲームを作ったか | プロジェクトの目的 |
-| 1:30 - 2:30 | Cursorでの開発方法 | Prompt ① |
-| 2:30 - 4:30 | Cursorでの改善 | Prompt ②・③ + 実際の画面 |
-| 4:30 - 5:20 | ゲームの仕組み | Game画面 |
-| 5:20 - 6:20 | システム構成 | Architecture |
-| 6:20 - 7:20 | Ranking / Backend | Ranking画面 |
-| 7:20 - 8:00 | まとめ | 今回学んだこと |
+E Flappy U demonstrates an AI-assisted development approach in which the developer continuously:
 
----
+**Define an idea → Prompt Cursor → Run and check → Identify improvements → Prompt again → Implement**
 
-# 15. 発表で一番伝えたいこと
-
-今回の発表では、コードの細かい説明よりも、**Cursorを使った開発の進め方**を中心に説明します。
-
-特に伝えたいのは、
-
-> **「最初から完璧な仕様を作ってから実装するのではなく、まずアイデアをCursorに伝えて形にし、実際に動かしながらPromptで改善していくことができた」**
-
-という点です。
-
-今回のE Flappy Uは、その方法を試すための小さなPoCとして作りました。
-
----
-
-# 16. まとめ
-
-E Flappy Uは、Flappy Bird風のシンプルなWebゲームです。
-
-今回のプロジェクトでは、
-
-- Webゲームを実際に形にする
-- FrontendとBackendを組み合わせる
-- Rankingを複数人で共有する
-- Cursorを使ってPromptベースで改善する
-
-ということを経験しました。
-
-特にCursorについては、
-
-> **Idea → Prompt → 実装 → 実際に確認 → 改善Prompt → 再実装**
-
-というサイクルを繰り返すことで、短い時間でもアイデアを実際に動くWebアプリに近づけられることを確認できました。
-
----
-
-## One-line Summary
-
-> **E Flappy Uは、Flappy Bird風のシンプルなWebゲームを題材に、Cursorを使って「アイデアを形にする → 実際に確認する → Promptで改善する」という開発方法を試したプロジェクトです。**
+Rather than relying on a single prompt to generate a complete application, the PoC uses short feedback cycles to gradually refine both the functionality and the user experience.
