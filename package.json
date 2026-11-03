@@ -5,6 +5,11 @@
   "type": "module",
   "description": "EFU internal game: E Flappy U",
   "scripts": {
-    "dev": "node server.mjs"
+    "dev": "node server.mjs",
+    "dev:cf": "wrangler pages dev . --kv SCORES",
+    "deploy": "wrangler pages deploy ."
+  },
+  "devDependencies": {
+    "wrangler": "^4.157.0"
   }
 }

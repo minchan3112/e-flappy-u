@@ -2,6 +2,7 @@ import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseScorePayload, ranked, upsertScore } from "./ranking-logic.js";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = path.join(ROOT, "data", "scores.json");
@@ -29,10 +30,6 @@ async function writeScores(scores) {
   await fs.writeFile(DATA_FILE, JSON.stringify(scores, null, 2));
 }
 
-function ranked(scores) {
-  return [...scores].sort((a, b) => b.bestScore - a.bestScore || a.name.localeCompare(b.name)).slice(0, 20);
-}
-
 function json(res, status, body) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify(body));
@@ -58,34 +55,13 @@ async function handleRanking(req, res) {
     return;
   }
 
-  const name = String(body.name || "").trim().slice(0, 20);
-  const department = String(body.department || "").trim().slice(0, 24);
-  const character = String(body.character || "スカイ").trim().slice(0, 16);
-  const score = Number(body.score);
-
-  if (name.length < 1 || !Number.isInteger(score) || score < 0 || score > 9999) {
-    json(res, 400, { error: "名前またはスコアが不正です" });
+  const parsed = parseScorePayload(body);
+  if (parsed.error) {
+    json(res, 400, { error: parsed.error });
     return;
   }
 
-  const scores = await readScores();
-  const existing = scores.find((row) => row.name.toLowerCase() === name.toLowerCase());
-  if (existing) {
-    existing.department = department || existing.department;
-    existing.character = character || existing.character;
-    existing.lastScore = score;
-    existing.bestScore = Math.max(existing.bestScore, score);
-    existing.updatedAt = new Date().toISOString();
-  } else {
-    scores.push({
-      name,
-      department,
-      character,
-      lastScore: score,
-      bestScore: score,
-      updatedAt: new Date().toISOString(),
-    });
-  }
+  const scores = upsertScore(await readScores(), parsed);
   await writeScores(scores);
   json(res, 200, ranked(scores));
 }
