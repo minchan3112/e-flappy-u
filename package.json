@@ -6,8 +6,8 @@
   "description": "EFU internal game: E Flappy U",
   "scripts": {
     "dev": "node server.mjs",
-    "dev:cf": "wrangler pages dev . --kv SCORES",
-    "deploy": "wrangler pages deploy ."
+    "dev:cf": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.157.0"

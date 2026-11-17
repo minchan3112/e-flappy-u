@@ -1,0 +1,16 @@
+.git
+.wrangler
+node_modules
+data
+functions
+worker.js
+server.mjs
+ranking-logic.js
+wrangler.toml
+package.json
+package-lock.json
+.gitignore
+.assetsignore
+_routes.json
+.dev.vars
+*.md

@@ -1,9 +1,12 @@
 name = "e-flappy-u"
+main = "worker.js"
 compatibility_date = "2026-11-01"
-pages_build_output_dir = "."
 
-# After creating the KV namespace, paste the id here:
-# wrangler kv namespace create SCORES
-# [[kv_namespaces]]
-# binding = "SCORES"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+[assets]
+directory = "."
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[kv_namespaces]]
+binding = "SCORES"
+id = "f738156910e34e52a01a4395e6bfd3ca"

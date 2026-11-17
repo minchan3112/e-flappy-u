@@ -246,9 +246,9 @@ body {
 
 .stats div {
   display: grid;
-  grid-template-columns: 7.5rem 1fr;
+  grid-template-columns: 5.5rem 1fr;
   gap: 8px;
-  align-items: baseline;
+  align-items: center;
 }
 
 .stats dt {
@@ -260,6 +260,12 @@ body {
 .stats dd {
   margin: 0;
   font-weight: 700;
+}
+
+.stats-look {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .panel {
@@ -310,8 +316,17 @@ input:focus {
 
 .character-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+}
+
+.rank-avatar,
+.card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #e0f2fe;
 }
 
 .char-btn {
@@ -329,11 +344,13 @@ input:focus {
   box-shadow: 3px 3px 0 #38bdf8;
 }
 
-.char-swatch {
-  width: 36px;
-  height: 36px;
+.char-preview {
+  display: block;
+  width: 100%;
+  height: 56px;
   margin: 0 auto 4px;
-  border-radius: 4px;
+  background: #e0f2fe;
+  border-radius: 6px;
 }
 
 .char-btn small {
@@ -425,6 +442,28 @@ canvas {
   gap: 8px;
 }
 
+.rank-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.rank-tab {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rank-tab.selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
 .ranking-list {
   display: grid;
   gap: 8px;
@@ -433,8 +472,8 @@ canvas {
 
 .rank-row {
   display: grid;
-  grid-template-columns: 40px 1fr auto;
-  gap: 10px;
+  grid-template-columns: 32px 40px minmax(0, 1fr) auto;
+  gap: 8px;
   align-items: center;
   border-bottom: 1px solid #f1f5f9;
   padding: 8px 8px;
@@ -498,7 +537,7 @@ footer {
   }
 
   .character-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .topbar {

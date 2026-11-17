@@ -61,8 +61,11 @@
                 <dd id="stat-dept">—</dd>
               </div>
               <div>
-                <dt>キャラクター</dt>
-                <dd id="stat-char">—</dd>
+                <dt>見た目</dt>
+                <dd class="stats-look">
+                  <canvas id="stat-avatar" class="card-avatar" width="32" height="32"></canvas>
+                  <span id="stat-char">—</span>
+                </dd>
               </div>
               <div>
                 <dt>自己ベスト</dt>
@@ -75,7 +78,7 @@
         <section class="game-col">
           <div id="lobby" class="panel lobby">
             <h2>プレイ登録</h2>
-            <p class="hint">社内で使っている呼び名で登録してください。自己ベストは共通ランキングに表示されます。</p>
+            <p class="hint">社内で使っている呼び名で登録してください。今週のランキングは月曜にリセットされます。</p>
             <form id="join-form">
               <label>
                 お名前
@@ -85,7 +88,7 @@
                 部署 <span>（任意）</span>
                 <input id="player-dept" name="department" maxlength="24" placeholder="例：プロダクト" />
               </label>
-              <p class="label">キャラクターを選ぶ</p>
+              <p class="label">キャラクター / ステージを選ぶ</p>
               <div id="character-grid" class="character-grid"></div>
               <button class="primary" type="submit">プレイをはじめる</button>
             </form>
@@ -100,9 +103,12 @@
         <aside class="rank-col panel">
           <div class="rank-head">
             <h2>EFU ランキング</h2>
-            <span class="point-badge">⭐ 点</span>
+            <div class="rank-tabs" role="tablist" aria-label="ランキング期間">
+              <button id="rank-week-btn" class="rank-tab selected" type="button" data-scope="week">今週</button>
+              <button id="rank-all-btn" class="rank-tab" type="button" data-scope="all">通算</button>
+            </div>
           </div>
-          <p class="hint">各プレイヤーの自己ベストを社内サーバーに保存します。</p>
+          <p id="rank-week-hint" class="hint">今週のベストを表示します。月曜 0:00（日本時間）にリセットされます。</p>
           <div id="ranking-list" class="ranking-list">
             <p class="empty">ランキングを読み込み中…</p>
           </div>

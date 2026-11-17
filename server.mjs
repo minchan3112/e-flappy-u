@@ -2,7 +2,7 @@ import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseScorePayload, ranked, upsertScore } from "./ranking-logic.js";
+import { parseScorePayload, parseScope, rankingPayload, upsertScore } from "./ranking-logic.js";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = path.join(ROOT, "data", "scores.json");
@@ -35,9 +35,10 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-async function handleRanking(req, res) {
+async function handleRanking(req, res, url) {
+  const scope = parseScope(url.searchParams.get("scope"));
   if (req.method === "GET") {
-    json(res, 200, ranked(await readScores()));
+    json(res, 200, rankingPayload(await readScores(), scope));
     return;
   }
   if (req.method !== "POST") {
@@ -63,7 +64,7 @@ async function handleRanking(req, res) {
 
   const scores = upsertScore(await readScores(), parsed);
   await writeScores(scores);
-  json(res, 200, ranked(scores));
+  json(res, 200, rankingPayload(scores, scope));
 }
 
 async function serveStatic(req, res) {
@@ -89,7 +90,7 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://localhost:${PORT}`);
     if (url.pathname === "/api/ranking") {
-      await handleRanking(req, res);
+      await handleRanking(req, res, url);
       return;
     }
     await serveStatic(req, res);

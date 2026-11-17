@@ -1,6 +1,9 @@
 import { BRAND, CHARACTERS } from "./brand.js";
-import { sfx, toggleMute, isMuted, unlockAudio } from "./audio.js";
+import { sfx, toggleMute, unlockAudio } from "./audio.js";
 import { fetchRanking, submitScore, renderRanking } from "./ranking.js";
+import { drawCreature, paintCreature } from "./creatures.js";
+import { appearanceLabel, paintAvatarCanvas, resolveCharacterId } from "./avatar.js";
+import { drawThemeBadge, drawThemeGround, drawThemePipes, drawThemeScenery, drawThemeSky, themeOf } from "./themes.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -71,6 +74,9 @@ function resetRound(mode = "ready") {
   state.frame = 0;
   state.spawnTick = 0;
   state.submitted = false;
+  if (mode === "ready") {
+    state.pipes.push({ x: 268, gapY: 168, gap: 168, scored: true });
+  }
 }
 
 function spawnPipe(gap) {
@@ -115,15 +121,19 @@ async function onCrash() {
   state.submitted = true;
   sfx.crash();
   try {
-    const list = await submitScore({
-      name: player.name,
-      department: player.department,
-      character: character().name,
-      score: state.score,
-    });
+    await submitScore(
+      {
+        name: player.name,
+        department: player.department,
+        character: appearanceLabel(player),
+        characterId: player.characterId,
+        score: state.score,
+      },
+      rankScope,
+    );
     state.bestScore = Math.max(state.bestScore, state.score);
     syncPlayerCard();
-    renderRanking(list, player.name, rankingList);
+    await refreshRanking();
   } catch {
     rankingList.insertAdjacentHTML("afterbegin", `<p class="empty">スコアをサーバーに保存できませんでした。</p>`);
   }
@@ -180,111 +190,59 @@ function roundRect(x, y, w, h, r) {
   ctx.closePath();
 }
 
-function drawBackground() {
-  const sky = ctx.createLinearGradient(0, 0, 0, HEIGHT);
-  sky.addColorStop(0, "#8fd3ff");
-  sky.addColorStop(1, "#e8f7c8");
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, WIDTH, HEIGHT);
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  for (const cloud of state.clouds) {
-    roundRect(cloud.x, cloud.y, cloud.w, 28, 14);
-    ctx.fill();
-    roundRect(cloud.x + 18, cloud.y - 14, cloud.w * 0.55, 26, 13);
-    ctx.fill();
-  }
+function currentTheme() {
+  return themeOf(character());
+}
 
-  ctx.fillStyle = "rgba(255,255,255,0.55)";
-  roundRect(12, 12, 132, 36, 12);
-  ctx.fill();
-  ctx.fillStyle = "#0369a1";
-  ctx.font = 'bold 14px "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif';
-  ctx.textAlign = "left";
-  ctx.fillText(`${BRAND.company} · ${BRAND.initials}`, 24, 36);
+function drawBackground() {
+  const theme = currentTheme();
+  drawThemeSky(ctx, theme, WIDTH, HEIGHT);
+  drawThemeScenery(ctx, theme, state.clouds, state.frame, WIDTH, HEIGHT, GROUND_H);
+  drawThemeBadge(ctx, theme, BRAND);
 }
 
 function drawPipes() {
-  for (const pipe of state.pipes) {
-    ctx.fillStyle = "#34d399";
-    ctx.fillRect(pipe.x, 0, PIPE_W, pipe.gapY);
-    ctx.fillRect(pipe.x, pipe.gapY + pipe.gap, PIPE_W, HEIGHT - GROUND_H - (pipe.gapY + pipe.gap));
-    ctx.fillStyle = "#059669";
-    ctx.fillRect(pipe.x - 4, pipe.gapY - 22, PIPE_W + 8, 22);
-    ctx.fillRect(pipe.x - 4, pipe.gapY + pipe.gap, PIPE_W + 8, 22);
-  }
+  drawThemePipes(ctx, currentTheme(), state.pipes, PIPE_W, HEIGHT, GROUND_H);
 }
 
 function drawGround(speed) {
-  ctx.fillStyle = "#d9b36a";
-  ctx.fillRect(0, HEIGHT - GROUND_H, WIDTH, GROUND_H);
-  ctx.fillStyle = "#86efac";
-  ctx.fillRect(0, HEIGHT - GROUND_H, WIDTH, 18);
-  ctx.fillStyle = "#4d7c0f";
-  const offset = (state.frame * speed) % 28;
-  for (let x = -28; x < WIDTH + 28; x += 28) {
-    ctx.beginPath();
-    ctx.moveTo(x - offset, HEIGHT - GROUND_H + 18);
-    ctx.lineTo(x + 14 - offset, HEIGHT - GROUND_H);
-    ctx.lineTo(x + 28 - offset, HEIGHT - GROUND_H + 18);
-    ctx.fill();
-  }
+  drawThemeGround(ctx, currentTheme(), state.frame, speed, WIDTH, HEIGHT, GROUND_H);
 }
 
 function drawBird() {
-  const look = character();
   const tilt = Math.max(-0.6, Math.min(0.8, state.birdV / 10));
   ctx.save();
   ctx.translate(BIRD_X, state.birdY);
   ctx.rotate(tilt);
-  ctx.fillStyle = look.body;
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 22, 16, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(8, -4, 6, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#1e293b";
-  ctx.beginPath();
-  ctx.arc(10, -4, 2.4, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = look.beak;
-  ctx.beginPath();
-  ctx.moveTo(18, 0);
-  ctx.lineTo(32, 4);
-  ctx.lineTo(18, 8);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = look.wing;
-  ctx.beginPath();
-  ctx.ellipse(-6, 4, 10, 7, -0.4, 0, Math.PI * 2);
-  ctx.fill();
+  const flap = state.mode === "play" ? Math.sin(state.frame * 0.42) * 0.45 : 0.2;
+  drawCreature(ctx, character().species, flap);
   ctx.restore();
 }
 
 function drawHud() {
-  ctx.fillStyle = "#1e293b";
+  const look = character();
+  const theme = currentTheme();
+  ctx.fillStyle = theme.hud;
   ctx.font = 'bold 42px "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif';
   ctx.textAlign = "center";
   if (state.mode === "play") {
     ctx.fillText(String(state.score), WIDTH / 2, 72);
     ctx.font = 'bold 14px "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif';
-    ctx.fillStyle = "#0369a1";
     ctx.fillText(`Lv ${Math.floor(state.score / 5) + 1} · ${player.name}`, WIDTH / 2, 96);
   }
 
   if (state.mode === "ready" || state.mode === "over") {
     roundRect(40, 200, WIDTH - 80, 290, 24);
-    ctx.fillStyle = "rgba(255,255,255,0.94)";
+    ctx.fillStyle = "rgba(255,255,255,0.88)";
     ctx.fill();
     ctx.fillStyle = "#1e293b";
     ctx.font = 'bold 28px "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif';
     ctx.fillText(state.mode === "ready" ? BRAND.product : "ゲームオーバー", WIDTH / 2, 252);
     ctx.font = '16px "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif';
     if (state.mode === "ready") {
-      ctx.fillText(player.name, WIDTH / 2, 292);
-      ctx.fillText("タップ / スペースでジャンプ", WIDTH / 2, 328);
-      ctx.fillText("得点が上がるとスピードが上がります", WIDTH / 2, 358);
+      ctx.fillText(`${player.name} · ${look.name}`, WIDTH / 2, 292);
+      ctx.fillText(`${look.team}ステージ`, WIDTH / 2, 322);
+      ctx.fillText("タップ / スペースでジャンプ", WIDTH / 2, 356);
     } else {
       ctx.fillText(`今回の得点：${state.score}`, WIDTH / 2, 300);
       ctx.fillText(`自己ベスト：${Math.max(state.bestScore, state.score)}`, WIDTH / 2, 334);
@@ -307,11 +265,16 @@ function loop() {
 function paintCharacters() {
   characterGrid.innerHTML = CHARACTERS.map(
     (c) => `<button type="button" class="char-btn${c.id === player.characterId ? " selected" : ""}" data-id="${c.id}">
-      <div class="char-swatch" style="background:${c.body}"></div>
+      <canvas class="char-preview" width="72" height="56" data-species="${c.species}" aria-hidden="true"></canvas>
       <strong>${c.name}</strong>
       <small>${c.team}</small>
     </button>`
   ).join("");
+  characterGrid.querySelectorAll(".char-preview").forEach((preview) => {
+    const cctx = preview.getContext("2d");
+    cctx.imageSmoothingEnabled = true;
+    paintCreature(cctx, preview.dataset.species, preview.width, preview.height, 0.28);
+  });
 }
 
 function syncPlayerCard() {
@@ -326,8 +289,9 @@ function syncPlayerCard() {
   stats.classList.remove("hidden");
   document.getElementById("stat-name").textContent = player.name;
   document.getElementById("stat-dept").textContent = player.department || "社内";
-  document.getElementById("stat-char").textContent = character().name;
+  document.getElementById("stat-char").textContent = appearanceLabel(player);
   document.getElementById("stat-best").textContent = `${Math.max(state.bestScore, state.score)} 点`;
+  paintAvatarCanvas(document.getElementById("stat-avatar"), player);
 }
 
 function enterGame() {
@@ -335,7 +299,7 @@ function enterGame() {
   lobby.classList.add("hidden");
   stageWrap.classList.remove("hidden");
   playerChip.classList.remove("hidden");
-  playerChip.textContent = `${player.name} · ${character().name}`;
+  playerChip.textContent = `${player.name} · ${appearanceLabel(player)}`;
   syncPlayerCard();
   resetRound("ready");
 }
@@ -348,9 +312,16 @@ function enterLobby() {
   syncPlayerCard();
 }
 
+let rankScope = "week";
+
+function syncRankTabs() {
+  document.getElementById("rank-week-btn").classList.toggle("selected", rankScope === "week");
+  document.getElementById("rank-all-btn").classList.toggle("selected", rankScope === "all");
+}
+
 async function refreshRanking() {
   try {
-    renderRanking(await fetchRanking(), player.name, rankingList);
+    renderRanking(await fetchRanking(rankScope), player.name, rankingList);
   } catch {
     rankingList.innerHTML = `<p class="empty">社内ランキングに接続できません。</p>`;
   }
@@ -362,7 +333,7 @@ function loadProfile() {
     if (!saved) return;
     player.name = saved.name || "";
     player.department = saved.department || "";
-    player.characterId = saved.characterId || "sky";
+    player.characterId = resolveCharacterId(saved.characterId || "sky");
     document.getElementById("player-name").value = player.name;
     document.getElementById("player-dept").value = player.department;
   } catch {
@@ -370,16 +341,26 @@ function loadProfile() {
   }
 }
 
-paintCharacters();
 loadProfile();
+paintCharacters();
 syncPlayerCard();
+syncRankTabs();
 refreshRanking();
 loop();
+
+document.querySelector(".rank-tabs").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-scope]");
+  if (!btn) return;
+  rankScope = btn.dataset.scope === "all" ? "all" : "week";
+  sfx.ui();
+  syncRankTabs();
+  refreshRanking();
+});
 
 characterGrid.addEventListener("click", (e) => {
   const btn = e.target.closest(".char-btn");
   if (!btn) return;
-  player.characterId = btn.dataset.id;
+  player.characterId = resolveCharacterId(btn.dataset.id);
   sfx.ui();
   paintCharacters();
 });

@@ -1,4 +1,4 @@
-import { parseScorePayload, ranked, upsertScore } from "../../ranking-logic.js";
+import { parseScorePayload, parseScope, rankingPayload, upsertScore } from "../../ranking-logic.js";
 
 const KEY = "scores";
 
@@ -13,8 +13,11 @@ function json(data, status = 200) {
 }
 
 export async function onRequest({ request, env }) {
+  const url = new URL(request.url);
+  const scope = parseScope(url.searchParams.get("scope"));
+
   if (request.method === "GET") {
-    return json(ranked(await readScores(env.SCORES)));
+    return json(rankingPayload(await readScores(env.SCORES), scope));
   }
 
   if (request.method !== "POST") {
@@ -37,5 +40,5 @@ export async function onRequest({ request, env }) {
 
   const scores = upsertScore(await readScores(env.SCORES), parsed);
   await env.SCORES.put(KEY, JSON.stringify(scores));
-  return json(ranked(scores));
+  return json(rankingPayload(scores, scope));
 }
